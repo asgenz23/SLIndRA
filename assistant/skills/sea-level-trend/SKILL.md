@@ -45,19 +45,9 @@ Normalize source sea-level values to `mm` for calculations unless repository hel
 
 ## Approved Trend Figures
 
-Use approved helpers in `functions/sea_level_plotting.py`, including:
+Use only approved helpers listed in **Governance § Approved Plotting Helpers Reference § Trend Analysis Helpers**. See that reference for complete parameter documentation.
 
-- `plot_magnitude_map`
-- `plot_magnitude_map_background`
-- `plot_altimetry_trend_timeseries`
-- `plot_tide_gauge_trend_timeseries`
-- `plot_combined_trends`
-- `plot_enso_scatter`
-- `plot_combined_altimetry_tide_gauge_trend_map`
-- `plot_national_eez_combined_trend_map`
-- `plot_regional_altimetry_trend_map_filled_tide_gauges`
-
-Do not create final trend figures with ad hoc plotting code.
+Do not create final trend figures with ad hoc plotting code. If a required figure is unsupported, follow the proposal process in Governance § Approved Plotting Helpers Reference § Requesting New Helpers.
 
 ## Required Products Where Data Support Them
 

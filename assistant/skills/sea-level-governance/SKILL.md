@@ -46,6 +46,50 @@ For `National/EEZ` products, use project-approved national or EEZ boundaries whe
 
 Record boundary name, source, URL/path, version/date, geometry type, bounding box, use, fallback rationale, and limitations.
 
+## Mandatory Quality Control Workflow
+
+Quality Control (using `cindra-quality-control` skill) is a **required workflow step** for all CIndRA sea-level products. The QC gate must be applied after site setup and before proceeding to trend, flood-frequency, or product assembly analysis.
+
+**Mandatory sequence**:
+1. Site Setup → Create and validate site configuration
+2. **Quality Control** → Evaluate station-level Level 2 completeness gate
+3. Domain Workflows → Trend and/or flood-frequency analysis (if QC passes)
+4. Product Assembly → Package outputs for review
+
+Station-level Level 2 gate is a **blocking gate**, not optional filtering. If a station fails the gate, choose alternatives (narrower period, different station, or explicitly labeled exploratory sensitivity product).
+
+## Temporal Aggregation and Data Completeness Rules
+
+### Common Thresholds and Conventions
+
+#### Storm Year
+
+- **Definition**: May 1 – April 30 (inclusive)
+- **Labeling**: Label by starting year (e.g., storm year 2020 = May 1, 2020 – April 30, 2021)
+- **Completeness Rule**: Storm year passes if usable-day coverage ≥ 75% of expected days
+- **Diagnostic Flags**: Month-level failures carry forward as diagnostics, not automatic exclusions
+
+#### Calendar Year
+
+- **Definition**: January 1 – December 31 (inclusive)
+- **Completeness Rule**: Calendar year passes if usable-day coverage ≥ 75% of expected days
+- **Missing Year Definition**: Zero usable daily values = missing year (not partial year below 75%)
+
+#### Monthly
+
+- **Completeness Rule**: Month passes if usable-day coverage ≥ 75% AND maximum consecutive missing days ≤ 7
+- **Failed Days**: Record and carry forward; do not silently discard
+
+#### No-Data Preservation
+
+- **True no-data periods**: Represent as missing/empty/`NaN` — never convert to valid zero-count periods
+- **Partial-data periods**: Carry forward with QC diagnostics; do not exclude silently
+- **Rationale**: Preserves interpretability and enables downstream validation of data availability
+
+### Reference Documentation
+
+For detailed daily-interval rules, six-hour windows, and Level 2 station-level gates, see **`cindra-quality-control` § Daily Rule, Monthly Rule, Storm-Year Rule, Calendar-Year Rule, Station-Level Level 2 Gate**.
+
 ## UHSLC Coverage Source Rule
 
 For station inventories, use this hierarchy:
@@ -75,6 +119,61 @@ Do not average tide-gauge stations without a documented aggregation rule.
 ## Figure Policy
 
 Final CIndRA figures must be produced by approved code in `PICCM_SeaLevel`, especially helpers in `functions/sea_level_plotting.py`, or by a new helper first added to that module. Do not create final CIndRA figures using ad hoc inline plotting code. If a requested figure is unsupported, propose a new plotting helper with name, inputs, outputs, and method purpose.
+
+## Approved Plotting Helpers Reference
+
+### Canonical Helper Locations
+
+- **`functions/sea_level_plotting.py`** — Core helpers for trend, flood-frequency, anomaly, and rankings workflows (Production-ready)
+- **`functions/cindra_regional_plotting_helpers.py`** — Regional-domain specialized helpers (Draft/Experimental status)
+
+### By Workflow Category
+
+#### Trend Analysis Helpers
+
+- `plot_magnitude_map` — Combined absolute altimetry and relative tide-gauge sea-level change magnitude map
+- `plot_magnitude_map_background` — Background-only absolute altimetry magnitude map
+- `plot_altimetry_trend_timeseries` — Absolute altimetry trend time series with linear fit
+- `plot_tide_gauge_trend_timeseries` — Relative tide-gauge trend time series with linear fit
+- `plot_combined_trends` — Side-by-side comparison of altimetry and tide-gauge trends
+- `plot_enso_scatter` — ENSO index versus sea-level anomaly scatter plot with regression
+- `plot_combined_altimetry_tide_gauge_trend_map` — Combined map for National/EEZ profile (same as `plot_magnitude_map`)
+- `plot_national_eez_combined_trend_map` — National/EEZ combined trend map (see TR04 consolidated product)
+- `plot_regional_altimetry_trend_map_filled_tide_gauges` — Regional absolute altimetry trend map with relative tide-gauge station markers (Draft)
+
+#### Flood-Frequency Helpers
+
+- `plot_histogram_with_threshold` — Hourly water-level histogram with 30 cm MHHW threshold line
+- `plot_flood_counts_with_trend` — Annual flood-day counts with trend line and p-value
+- `plot_flood_counts_with_oni` — Annual flood-day counts colored by ENSO phase
+- `plot_flood_days_heatmap` — Storm-year by month heatmap of flood-day counts
+- `plot_flood_matrix_summary` — Composite flood matrix with annual counts and monthly percent contribution (see FF04 consolidated product)
+- `plot_oni_only` — ENSO phase bar chart for context only
+- `plot_monthly_contribution_vertical` — Monthly flood-day count or percent-contribution vertical bar chart
+- `plot_regional_flood_frequency_overview` — Regional station-by-year flood-day matrix with annual totals (Draft)
+
+#### Anomaly and Decadal Analysis Helpers
+
+- `plot_tg_rsl_anomaly_annual` — Relative tide-gauge sea-level anomaly by year
+- `plot_anomaly_decadal_maps` — Gridded anomaly maps for decadal periods
+- `plot_anomaly_station_series` — Station anomaly time series with ENSO context
+
+#### Rankings and Extremes Helpers
+
+- `make_plotly_figure_rankings` — Interactive Plotly rankings visualization
+- `make_rankings_static_figure` — Static rankings figure
+- `plot_simple_timeseries` — Basic time series plot
+- `plot_daily_max_timeseries` — Daily maximum water level time series
+- `plot_annual_range_fill` — Annual range (min/max) with mean fill
+
+### Requesting New Helpers
+
+If a required figure is not listed above:
+
+1. Propose the new helper with name, inputs, outputs, and method purpose
+2. Add it to `functions/sea_level_plotting.py` or `functions/cindra_regional_plotting_helpers.py`
+3. Update this reference section with category and description
+4. Mark as Draft/Experimental if not yet validated
 
 ## Review Status
 

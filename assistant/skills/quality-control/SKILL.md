@@ -62,3 +62,11 @@ QC outputs should include station ID/name/country, period, method ID, temporal r
 ## Validation
 
 Do not mark a station suitable without listing specific passing years/months and Level 2 status. If a station fails, recommend alternatives such as a narrower period, another station, or an explicitly labeled exploratory sensitivity product.
+
+## Integration with Downstream Workflows
+
+Quality Control is a **mandatory workflow step** in all CIndRA sea-level indicator pipelines. It must run after site setup and before trend, flood-frequency, or product assembly workflows.
+
+QC outputs are required inputs for all domain-skill workflows (trend, flood-frequency, product assembly). Pass the QC reference (Level 2 gate status, passing years, missing years, diagnostic flags) to downstream skills to preserve data-completeness context and enable reproducible validation.
+
+For detailed completeness-threshold definitions and conventions shared across QC and all domain skills, see **Governance § Temporal Aggregation and Data Completeness Rules**.

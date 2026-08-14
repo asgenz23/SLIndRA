@@ -35,33 +35,30 @@ A flood day occurs when daily maximum water level reaches or exceeds `30 cm abov
 
 ## Workflow
 
-1. Confirm site setup exists.
-2. Confirm station-level Level 2 screening for the requested timeframe.
-3. Exclude stations failing the station-level Level 2 gate from primary products unless explicitly producing an exploratory sensitivity product.
-4. For passing stations, retain all available years/storm-years/months and carry QC diagnostics forward.
-5. Confirm MHHW datum.
-6. Convert water levels to height relative to MHHW where needed.
-7. Apply `30 cm above MHHW` threshold.
-8. Compute daily maxima.
-9. Count flood days.
-10. Aggregate by May-April storm year and optionally by month.
-11. Preserve true no-data periods as missing/empty/`NaN`, not zero.
-12. Save tables and provenance.
+**Prerequisites**: Site configuration and Quality Control screening must be completed before starting flood-frequency analysis. See `cindra-quality-control` and `cindra-site-setup` skills.
+
+Workflow steps:
+
+1. Load site configuration and QC reference (Level 2 pass/fail status, passing years, missing years).
+2. For stations passing Level 2 gate, retain all available years/storm-years/months; carry QC diagnostics forward.
+3. Confirm MHHW datum availability.
+4. Convert water levels to height relative to MHHW where needed.
+5. Apply `30 cm above MHHW` threshold.
+6. Compute daily maxima from hourly values.
+7. Count flood days (daily maximum ≥ threshold).
+8. Aggregate by May-April storm year (see Governance § Temporal Aggregation and Data Completeness Rules) and optionally by month.
+9. Preserve true no-data periods as missing/empty/`NaN`; do not convert to zero-count periods (see Governance § No-Data Preservation).
+10. Save tables and provenance.
+
+**Handling QC Failures**: Stations failing Level 2 gate should not be included in primary products. To generate exploratory sensitivity products for failed stations, explicitly label as exploratory and document the QC failure reason.
 
 ## Approved Figures
 
-Use approved helpers only, including:
-
-- `plot_histogram_with_threshold`
-- `plot_flood_counts_with_trend`
-- `plot_flood_counts_with_oni`
-- `plot_flood_days_heatmap`
-- `plot_flood_matrix_summary`
-- `plot_oni_only`
-- `plot_monthly_contribution_vertical`
-- `plot_regional_flood_frequency_overview`
+Use only approved helpers listed in **Governance § Approved Plotting Helpers Reference § Flood-Frequency Helpers**. See that reference for complete parameter documentation.
 
 For `Regional`, the report-facing product is the station-year flood-day matrix with annual regional total-count bar chart using `plot_regional_flood_frequency_overview`.
+
+Do not create final flood-frequency figures with ad hoc plotting code. If a required figure is unsupported, follow the proposal process in Governance § Approved Plotting Helpers Reference § Requesting New Helpers.
 
 ## Monthly Products
 
@@ -81,7 +78,13 @@ Distinguish monthly count figures from percent contribution figures. Percent con
 
 ## Validation
 
-Confirm MHHW availability, station-level Level 2 screening, retention of partial-data periods as diagnostics, true no-data periods as missing, approved plotting helpers, complete storm years, daily maxima, May-April convention, and correct count/percent labels.
+Confirm:
+- QC status: Station passes Level 2 gate for intended period (see Quality Control skill)
+- MHHW availability and datum compatibility
+- Retention of partial-data periods as QC diagnostics; true no-data periods as NaN
+- Storm-year aggregation: May 1 – April 30 (see Governance § Temporal Aggregation)
+- Daily maxima (not daily means)
+- Monthly vs. percent-contribution labels (raw counts never labeled as percentages)
 
 ## Flood Matrix Summary Product — Consolidated FF04 Update
 
